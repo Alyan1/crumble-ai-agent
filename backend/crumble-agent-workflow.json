@@ -1,0 +1,474 @@
+{
+  "name": "Crumble Chat Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat-widget",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1136,
+        -256
+      ],
+      "id": "188bc5e0-8b2c-40f3-90ba-39e19251db6f",
+      "name": "Webhook",
+      "webhookId": "66f0317b-d115-4c31-a77b-8faea8f52fed"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ JSON.stringify({ \"reply\": $node[\"Message a model1\"].json.content.parts[0].text }) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        720,
+        -128
+      ],
+      "id": "7aab887a-9b24-4cd8-814b-3d397bab88eb",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ JSON.parse($json.body).message }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {
+          "systemMessage": "You are a data extraction tool. Extract the cookie item and the quantity from the user's message. Output ONLY a strict JSON object with no markdown formatting. Example: {\"item\": \"hazelnut cookie\", \"quantity\": 2}. If they don't mention an order, return {\"item\": \"none\", \"quantity\": 0}."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -992,
+        -64
+      ],
+      "id": "1c914cdc-5c8b-4604-a196-172911b8b3ec",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "T2dmAH0TeKBmY9dU",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=CONVERSATION HISTORY:\n{{ $node[\"Memory Engine\"].json.historyString }}\n\nCURRENT USER MESSAGE:\n{{ JSON.parse($node[\"Webhook\"].json.body).message }}\n\nCALCULATED DATA:\nItem: {{ $node[\"Code 2\"].json.customer_quantity }} {{ $node[\"Code 2\"].json.customer_item }}\nTotal: {{ $node[\"Code 2\"].json.bill_total }} Rs.\n\nCRUMBLE OFFICIAL MENU:\n\n* Cookies:\n- Kunafa Double Chocolate (Rs. 390)\n- Lotus Lava (Rs. 390)\n- Peanut Butter Choclolate Chip (Rs. 350)\n- Classic Chocolate Chip (Rs. 350)\n- Double Chocolate (Rs. 350)\n- Midnight Cookie & Cream (Rs. 350)\n- Chocolate Chip Walnut (Rs. 350)\n- Chocolate Filled Hazelnut (Rs. 390)\n- NYC Brownie (Rs. 350)\n- Red Velvet Cream Cheese (Rs. 390)\n\n* Ice Cream Shakes:\n- Strawberry Shake (Rs. 570)\n- Lotus Shake (Rs. 570)\n- Vanilla Shake (Rs. 570)\n- Cookies N Cream Shake (Rs. 570)\n\n\nTask: Use the history above to understand the context. \n\nCRITICAL RULES FOR RESPONSE:\n1. Be extremely sarcastic and witty use Gen-Z slangs.\n2. IF the user asks \"what do you have\" or asks for the menu, list our Official Menu items with a sarcastic comment about how good they are.\n3. IF the user is placing an order, confirm the order and state the calculated Total.\n4. Keep your response short and punchy (Maximum 2 or 3 sentences). Do NOT write a novel."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "systemMessage": "You are a sarcastic, highly dramatic, but ultimately helpful customer service chatbot for \"Crumble\", a premium cookie brand in Pakistan. You must reply in the exact same language the user speaks. If they use English, reply in English. If they use Roman Urdu or a mix of both, you MUST reply in Roman Urdu and English slang (e.g., yaar, boss, bhai, jani). You love cookies, you think Crumble is the best thing on earth, and you subtly roast the customer in a friendly way while taking their order. DO NOT use markdown formatting like bolding or asterisks. Just return plain text. Do NOT break character."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        16,
+        -64
+      ],
+      "id": "613b963e-3cad-42ab-96f7-84b877b7cef9",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "T2dmAH0TeKBmY9dU",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1sJCceVkZBRM8sDUPzMvjuhmxxq3UJ0rQumZzHbz5Ihw",
+          "mode": "list",
+          "cachedResultName": "Crumble_Bot_Memory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sJCceVkZBRM8sDUPzMvjuhmxxq3UJ0rQumZzHbz5Ihw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sJCceVkZBRM8sDUPzMvjuhmxxq3UJ0rQumZzHbz5Ihw/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "sessionId",
+              "lookupValue": "{{ JSON.parse($node[\"Webhook\"].json.body).sessionId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -512,
+        -64
+      ],
+      "id": "7bfdc81e-2335-4667-ae42-752538d5dc70",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aOR7mSI9FBT392VF",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Get the text from the Gemini Extractor\nconst rawText = $node[\"Message a model\"].json.content.parts[0].text;\n\n// 2. Parse it into a real Javascript object\nconst data = JSON.parse(rawText);\n\n// 3. Define your business logic (Price List)\nconst prices = {\n  \"hazelnut cookie\": 500,\n  \"chocolate chip\": 400,\n  \"lotus biscoff\": 600\n};\n\n// 4. Calculate\nconst item = data.item.toLowerCase();\nconst quantity = data.quantity;\nconst unitPrice = prices[item] || 500; // Default to 500 if item not found\nconst totalBill = quantity * unitPrice;\n\n// 5. Output the facts for the next node\nreturn {\n  customer_item: item,\n  customer_quantity: quantity,\n  bill_total: totalBill,\n  currency: \"Rs.\"\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -720,
+        -64
+      ],
+      "id": "7a7184a3-e559-4cfe-9e45-a9823612d0d9",
+      "name": "Code 2"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1sJCceVkZBRM8sDUPzMvjuhmxxq3UJ0rQumZzHbz5Ihw",
+          "mode": "list",
+          "cachedResultName": "Crumble_Bot_Memory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sJCceVkZBRM8sDUPzMvjuhmxxq3UJ0rQumZzHbz5Ihw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sJCceVkZBRM8sDUPzMvjuhmxxq3UJ0rQumZzHbz5Ihw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "sessionId": "={{ JSON.parse($json.body).sessionId }}",
+            "role (user or bot)": "user",
+            "text": "={{ JSON.parse($json.body).message }}",
+            "timestamp": "={{ new Date() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "role (user or bot)",
+              "displayName": "role (user or bot)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "text",
+              "displayName": "text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -784,
+        -400
+      ],
+      "id": "2411f63b-71a7-4abf-8b89-d3803e092abe",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aOR7mSI9FBT392VF",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1sJCceVkZBRM8sDUPzMvjuhmxxq3UJ0rQumZzHbz5Ihw",
+          "mode": "list",
+          "cachedResultName": "Crumble_Bot_Memory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sJCceVkZBRM8sDUPzMvjuhmxxq3UJ0rQumZzHbz5Ihw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sJCceVkZBRM8sDUPzMvjuhmxxq3UJ0rQumZzHbz5Ihw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "sessionId": "={{ JSON.parse($node[\"Webhook\"].json.body).sessionId }}",
+            "role (user or bot)": "bot",
+            "text": "={{ $json.content.parts[0].text }}",
+            "timestamp": "={{ new Date() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "role (user or bot)",
+              "displayName": "role (user or bot)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "text",
+              "displayName": "text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        400,
+        -64
+      ],
+      "id": "ff970978-1429-4d12-a305-b342630931b4",
+      "name": "Append row in sheet1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aOR7mSI9FBT392VF",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let items = $input.all();\n\n// 1. SAFETY CATCH: If the Google Sheet is empty (brand new user),\n// n8n passes an empty object. We catch it here so the bot doesn't crash.\nif (items.length === 0 || Object.keys(items[0].json).length === 0 || !items[0].json.timestamp) {\n    return [{ json: { historyString: \"No previous conversation history. This is a new user.\" } }];\n}\n\n// 2. SORT: Arrange by timestamp descending (newest messages first)\nitems.sort((a, b) => new Date(b.json.timestamp) - new Date(a.json.timestamp));\n\n// 3. LIMIT: Keep only the most recent 6 messages to save AI token limits\nlet limited = items.slice(0, 6);\n\n// 4. FORMAT: Stitch them into a clean script for Gemini.\n// We reverse it so it reads chronologically top-to-bottom.\nlet history = limited.reverse().map(item => {\n    let role = item.json.role ? item.json.role.toUpperCase() : \"UNKNOWN\";\n    let text = item.json.text ? item.json.text : \"\";\n    return `${role}: ${text}`;\n}).join('\\n');\n\n// 5. OUTPUT: Pass the clean string to the next node\nreturn [{ json: { historyString: history } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        -64
+      ],
+      "id": "210ba5da-e931-4935-8853-d970fb9132c9",
+      "name": "Memory Engine"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Memory Engine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code 2": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Append row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory Engine": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "34872d83-0462-4602-80e4-b7fad0712e6e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9733b35501ac4fe1c69cc4e382e26735cff5b8da777211cf4df56938ad068e72"
+  },
+  "id": "Wf6FLuVh9peTVZx8",
+  "tags": []
+}

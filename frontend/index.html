@@ -1,0 +1,336 @@
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+    /* Funky & Premium UI/UX */
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #1a3db0;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #fbbf24;
+    }
+
+    #chat-container {
+        width: 380px;
+        height: 550px;
+        border: 2px solid #fbbf24;
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        font-family: 'Outfit', sans-serif;
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #234daf;
+        box-shadow: 0 10px 30px rgba(68, 83, 166, 0.5), 0 0 15px rgba(251, 191, 36, 0.2);
+        z-index: 1000;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .chat-header {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        color: #fbbf24;
+        padding: 18px 20px;
+        font-weight: 800;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(251, 191, 36, 0.3);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+    }
+
+    .chat-header span:first-child {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .session-id {
+        font-size: 11px;
+        opacity: 0.7;
+        font-weight: 400;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 4px 8px;
+        border-radius: 12px;
+        color: #ffffff;
+    }
+
+    #chat-box {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background-color: #42496c;
+        background-image: radial-gradient(circle at center, rgba(33, 81, 176, 0.8) 0%, #010b39 100%);
+    }
+
+    .message {
+        padding: 12px 16px;
+        border-radius: 16px;
+        max-width: 80%;
+        font-size: 14.5px;
+        line-height: 1.5;
+        box-shadow: 0 2px 5px rgba(205, 123, 123, 0.2);
+        animation: fadeIn 0.3s ease-out;
+        word-wrap: break-word;
+    }
+
+    .message.bot {
+        background: #ffffff;
+        color: #0f172a;
+        align-self: flex-start;
+        border-bottom-left-radius: 4px;
+        font-weight: 400;
+    }
+
+    .message.user {
+        background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+        color: #020617;
+        align-self: flex-end;
+        border-bottom-right-radius: 4px;
+        font-weight: 600;
+    }
+
+    .typing-indicator {
+        background: #1e293b;
+        color: #cbd5e1;
+        align-self: flex-start;
+        border-bottom-left-radius: 4px;
+        font-style: italic;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .typing-text {
+        margin-right: 5px;
+    }
+
+    .dot {
+        width: 5px;
+        height: 5px;
+        background: #fbbf24;
+        border-radius: 50%;
+        display: inline-block;
+        animation: bounce 1.4s infinite ease-in-out both;
+    }
+
+    .dot:nth-child(2) {
+        animation-delay: -0.32s;
+    }
+
+    .dot:nth-child(3) {
+        animation-delay: -0.16s;
+    }
+
+    .input-area {
+        display: flex;
+        padding: 15px;
+        background: #0f172a;
+        border-top: 1px solid rgba(251, 191, 36, 0.2);
+        gap: 10px;
+    }
+
+    #user-input {
+        flex: 1;
+        padding: 12px 15px;
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 25px;
+        outline: none;
+        font-size: 14px;
+        color: #ffffff;
+        font-family: inherit;
+        transition: all 0.3s;
+    }
+
+    #user-input:focus {
+        border-color: #fbbf24;
+        box-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+    }
+
+    #user-input::placeholder {
+        color: #64748b;
+    }
+
+    .send-btn {
+        background: #fbbf24;
+        color: #020617;
+        border: none;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 10px rgba(251, 191, 36, 0.3);
+        flex-shrink: 0;
+    }
+
+    .send-btn:hover {
+        transform: scale(1.05) rotate(-5deg);
+        background: #fbbf24;
+        box-shadow: 0 6px 15px rgba(251, 191, 36, 0.5);
+    }
+
+    .send-btn:active {
+        transform: scale(0.95);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes bounce {
+
+        0%,
+        80%,
+        100% {
+            transform: scale(0);
+        }
+
+        40% {
+            transform: scale(1);
+        }
+    }
+</style>
+
+<div id="chat-container">
+    <div class="chat-header">
+        <span>Crumble Chatbot 🍪</span>
+        <span class="session-id" id="session-display"></span>
+    </div>
+
+    <div id="chat-box">
+        <div class="message bot">
+            Welcome to Crumble! Kia order karain gy boss?
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="Type your order...">
+        <button onclick="sendMessage()" class="send-btn" aria-label="Send">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<script>
+    // --- 1. SESSION MANAGEMENT ---
+    let sessionId = localStorage.getItem('crumble_session_id');
+    if (!sessionId) {
+        sessionId = 'user_' + Math.random().toString(36).substring(2, 9);
+        localStorage.setItem('crumble_session_id', sessionId);
+    }
+    document.getElementById('session-display').innerText = "ID: " + sessionId;
+
+    // --- 2. INPUT LISTENER (ENTER KEY) ---
+    document.getElementById('user-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    // --- 3. TYPING INDICATOR LOGIC ---
+    function showTypingIndicator() {
+        const chatBox = document.getElementById('chat-box');
+        const typingDiv = document.createElement('div');
+        typingDiv.id = 'typing-indicator';
+        typingDiv.className = 'message typing-indicator';
+
+        // A sarcastic loading message!
+        typingDiv.innerHTML = '<span class="typing-text">Crumble is listining your thoughts... 🙄</span> <div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+        chatBox.appendChild(typingDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+        const typingDiv = document.getElementById('typing-indicator');
+        if (typingDiv) {
+            typingDiv.remove();
+        }
+    }
+
+    // --- 4. CORE CHAT LOGIC ---
+    async function sendMessage() {
+        const inputField = document.getElementById('user-input');
+        const message = inputField.value.trim();
+
+        if (!message) return;
+
+        // Display User Message
+        addMessageToChat(message, 'user');
+        inputField.value = '';
+
+        // SHOW THE LOADER IMMEDIATELY
+        showTypingIndicator();
+
+        const n8nWebhookUrl = 'http://localhost:5678/webhook/chat-widget';
+
+        try {
+            const response = await fetch(n8nWebhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({
+                    message: message,
+                    sessionId: sessionId
+                })
+            });
+
+            // REMOVE LOADER BEFORE SHOWING RESPONSE
+            removeTypingIndicator();
+
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const data = await response.json();
+
+            // Display the bot's snappy, sarcastic response
+            addMessageToChat(data.reply, 'bot');
+
+        } catch (error) {
+            // REMOVE LOADER IF SERVER CRASHES
+            removeTypingIndicator();
+            console.error("Error connecting to n8n:", error);
+            addMessageToChat('Oho! Server down hai jani, n8n check karo running hai ya nahi.', 'bot');
+        }
+    }
+
+    // --- 5. MESSAGE BUBBLE BUILDER ---
+    function addMessageToChat(text, sender) {
+        const chatBox = document.getElementById('chat-box');
+        const msgDiv = document.createElement('div');
+
+        msgDiv.className = `message ${sender}`;
+        msgDiv.innerText = text;
+
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
