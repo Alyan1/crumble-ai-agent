@@ -1,6 +1,8 @@
 # Crumble: Stateful AI Ordering Agent 🍪
 
 A headless, full-stack AI chatbot designed for Crumble. This project demonstrates advanced LLM orchestration, separating frontend UI from a deterministic, asynchronous AI backend.
+
+
 <img width="495" height="704" alt="ss1" src="https://github.com/user-attachments/assets/bd464e00-ace6-46fe-ae14-ff60f4eea798" />
 
 ---
@@ -29,7 +31,8 @@ This project uses a **Headless AI Architecture**:
 ### 1. Frontend
 * Open `frontend/index.html` in any modern web browser or run via a local server (e.g., VS Code Live Server).
 
-### 2. Backend<img width="1920" height="934" alt="Screenshot (68)" src="https://github.com/user-attachments/assets/da13fb35-8943-4db6-b965-21c61bb05393" />
+### 2. Backend
+<img width="1920" height="934" alt="Screenshot (68)" src="https://github.com/user-attachments/assets/da13fb35-8943-4db6-b965-21c61bb05393" />
 
 * Install [n8n](https://n8n.io/).
 * Open n8n, create a new workflow, and click **"Import from File"**.
